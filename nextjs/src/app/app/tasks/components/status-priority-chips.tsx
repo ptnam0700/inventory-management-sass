@@ -2,7 +2,7 @@
 
 import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Circle, AlertTriangle, Flag, CheckCircle2, Clock, Play } from 'lucide-react'
+import { Circle, Flag, CheckCircle2, Play } from 'lucide-react'
 import { TaskStatus, TaskPriority } from '@/lib/types'
 import { cn } from '@/lib/utils'
 

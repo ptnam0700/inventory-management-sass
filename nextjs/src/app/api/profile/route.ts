@@ -34,13 +34,13 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error('Profile update error:', error)
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid data', details: error.errors }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid data', details: error.issues }, { status: 400 })
     }
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createSSRClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()

@@ -211,7 +211,7 @@ export class SassClient {
         return task
     }
 
-    async createComment(input: any) {
+    async createComment(input: { task_id: string; author_id: string; content: string }) {
         const { data, error } = await this.client
             .from("comments")
             .insert([input])
@@ -237,7 +237,7 @@ export class SassClient {
         return { data: commentWithProfile, error: fetchError };
     }
     
-    async updateComment(input: any) {
+    async updateComment(input: { id: string; content: string }) {
     return this.client
         .from("comments")
         .update({ content: input.content })

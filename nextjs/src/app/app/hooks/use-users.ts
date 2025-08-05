@@ -2,9 +2,10 @@
 
 import { createSPASassClient } from "@/lib/supabase/client"
 import { useState, useEffect } from "react"
+import { Profile } from "@/lib/types"
 
 export function useUsers() {
-    const [users, setUsers] = useState<any[]>([])
+    const [users, setUsers] = useState<Profile[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
   

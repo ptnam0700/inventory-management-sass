@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Comment, ApiResponse } from '@/lib/types'
-import { CreateCommentInput, UpdateCommentInput } from '@/lib/validations/comment'
 
 export function useComments(taskId: string) {
   const [comments, setComments] = useState<Comment[]>([])

@@ -1,4 +1,3 @@
-import TaskDialog from "./task-dialog"
 import TaskList from "./task-list"
 
 export default function TaskPage() {

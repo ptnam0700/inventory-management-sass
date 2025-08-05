@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createSSRClient } from '@/lib/supabase/server'
 import { SassClient, ClientType } from '@/lib/supabase/unified'
 import { CreateTaskSchema, TaskQuerySchema } from '@/lib/validations/task'
-import { ApiResponse, TasksResponse } from '@/lib/types'
+import { ApiResponse, TasksResponse, Task } from '@/lib/types'
 
 export async function GET(request: NextRequest) {
   try {
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     })
 
     const response: TasksResponse = {
-      tasks: result.tasks || [],
+      tasks: (result.tasks || []) as unknown as Task[],
       totalCount: result.totalCount,
       totalPages: result.totalPages,
       currentPage: result.currentPage,

@@ -3,12 +3,11 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Send, MessageCircle, User, Loader2, AlertCircle } from "lucide-react"
+import { Send, MessageCircle, Loader2, AlertCircle } from "lucide-react"
 import { format, formatDistanceToNow } from "date-fns"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
@@ -48,9 +47,6 @@ export default function TaskCommentsDialog({ task, open, onOpenChange, onComment
     loading,
     error: commentsError,
     createComment,
-    updateComment,
-    deleteComment,
-    refresh,
   } = useComments(task.id)
 
   const getStatusBadge = (status: string) => {
@@ -122,7 +118,7 @@ export default function TaskCommentsDialog({ task, open, onOpenChange, onComment
             profiles: { id: currentUser!.id, email: currentUser!.email }
           }]
         }
-        onCommentAdded(updatedTask)
+        onCommentAdded(updatedTask as Task)
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to create comment'

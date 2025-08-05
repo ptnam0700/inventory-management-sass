@@ -4,7 +4,7 @@ export const TaskStatus = z.enum(['Todo', 'In Progress', 'Done'])
 export const TaskPriority = z.enum(['Low', 'Medium', 'High'])
 
 // Date preprocessing function to handle various date formats
-const preprocessDate = (value: any) => {
+const preprocessDate = (value: unknown) => {
   if (!value || value === '' || value === null || value === undefined) {
     return ''
   }

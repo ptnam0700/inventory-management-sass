@@ -54,7 +54,7 @@ export function useTasks({
             assignees
         })
         console.log("Fetched tasks:", data);
-        setTasks(data.tasks)
+        setTasks(data.tasks as unknown as Task[])
         setTotalCount(data.totalCount)
         setTotalPages(data.totalPages)
         setCurrentPage(data.currentPage)
@@ -64,7 +64,7 @@ export function useTasks({
     } finally {
         setLoading(false)
     }
-    }, [page, limit, search, status, priority, JSON.stringify(assignees)])
+    }, [page, limit, search, status, priority, assignees])
 
   useEffect(() => {
     fetchTasks()

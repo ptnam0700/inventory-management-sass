@@ -55,11 +55,11 @@ export function TaskFilters({ query, onQueryChange, users = [] }: TaskFiltersPro
   }
 
   const handleStatusChange = (value: string) => {
-    onQueryChange({ status: value as any })
+    onQueryChange({ status: value as 'Todo' | 'In Progress' | 'Done' | 'all' })
   }
 
   const handlePriorityChange = (value: string) => {
-    onQueryChange({ priority: value as any })
+    onQueryChange({ priority: value as 'Low' | 'Medium' | 'High' | 'all' })
   }
 
   const handleAssigneeChange = (userId: string) => {
@@ -67,11 +67,11 @@ export function TaskFilters({ query, onQueryChange, users = [] }: TaskFiltersPro
   }
 
   const handleSortChange = (value: string) => {
-    onQueryChange({ sort: value as any })
+    onQueryChange({ sort: value as 'created_at' | 'updated_at' | 'due_date' | 'title' | 'priority' | 'status' })
   }
 
   const handleOrderChange = (value: string) => {
-    onQueryChange({ order: value as any })
+    onQueryChange({ order: value as 'asc' | 'desc' })
   }
 
   const handleDueDateFromChange = (date: Date | undefined) => {

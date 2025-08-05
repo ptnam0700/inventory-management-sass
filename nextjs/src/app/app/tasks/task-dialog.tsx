@@ -98,7 +98,7 @@ export default function TaskDialog({
       setTitle(task.title || "")
       setDescription(task.description || "")
       setStatus(task.status || "todo")
-      setAssignees(task.task_assignees.map((assignee) => assignee?.profiles?.id) || [])
+      setAssignees(task.task_assignees?.map((assignee) => assignee?.profiles?.id).filter((id): id is string => id !== undefined) || [])
       setDueDate(task.due_date ? new Date(task.due_date) : undefined)
       setPriority(task.priority || "Medium")
     } else if (mode === "add") {
@@ -138,8 +138,7 @@ export default function TaskDialog({
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
         }
-        const { error: supabaseError } = await supabase.createTaskWithAssignees(newTask, assignees);
-        if (supabaseError) throw supabaseError;
+        await supabase.createTaskWithAssignees(newTask, assignees);
 
         resetForm()
         setIsOpen(false)
@@ -156,8 +155,7 @@ export default function TaskDialog({
           updated_at: new Date().toISOString(),
         }
 
-        const { error: supabaseError } = await supabase.updateTask(updatedTask, assignees);
-        if (supabaseError) throw supabaseError;
+        await supabase.updateTask(updatedTask, assignees);
         console.log("Updating task:", updatedTask)
 
         if (onTaskUpdated) await onTaskUpdated(updatedTask)
@@ -224,7 +222,7 @@ export default function TaskDialog({
         {/* Status */}
         <div className="space-y-2">
           <Label>Status</Label>
-          <Select value={status} onValueChange={setStatus}>
+          <Select value={status} onValueChange={(value) => setStatus(value as TaskStatus)}>
             <SelectTrigger>
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
@@ -353,7 +351,7 @@ export default function TaskDialog({
         {/* Priority */}
         <div className="space-y-2">
           <Label>Priority</Label>
-          <Select value={priority} onValueChange={setPriority}>
+          <Select value={priority} onValueChange={(value) => setPriority(value as TaskPriority)}>
             <SelectTrigger>
               <SelectValue placeholder="Select priority" />
             </SelectTrigger>

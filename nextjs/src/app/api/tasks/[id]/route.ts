@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createSSRClient } from '@/lib/supabase/server'
 import { SassClient, ClientType } from '@/lib/supabase/unified'
 import { UpdateTaskSchema, DeleteTaskSchema } from '@/lib/validations/task'
-import { ApiResponse } from '@/lib/types'
+import { ApiResponse, TaskStatus, TaskPriority } from '@/lib/types'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -22,7 +22,6 @@ export async function GET(
 
     const { id } = await context.params
     
-    const sassClient = new SassClient(supabase, ClientType.SERVER)
     const { data: task, error } = await supabase
       .from('tasks')
       .select(`
@@ -69,7 +68,14 @@ export async function PUT(
     
     const sassClient = new SassClient(supabase, ClientType.SERVER)
     
-    const updateData: any = { id }
+    const updateData: {
+      id: string;
+      title?: string;
+      description?: string;
+      status?: TaskStatus;  
+      priority?: TaskPriority;
+      due_date?: string | null;
+    } = { id }
     if (validatedData.title !== undefined) updateData.title = validatedData.title
     if (validatedData.description !== undefined) updateData.description = validatedData.description
     if (validatedData.status !== undefined) updateData.status = validatedData.status

@@ -15,7 +15,6 @@ import { Pagination } from './components/pagination'
 import { AvatarStack } from './components/avatar-stack'
 import { StatusChip, PriorityChip } from './components/status-priority-chips'
 import { DueDateDisplay } from './components/due-date-display'
-import { cn } from '@/lib/utils'
 import { Task, Profile } from '@/lib/types'
 import { CreateTaskInput, UpdateTaskInput } from '@/lib/validations/task'
 import TaskCommentsDialog from './task-comments-dialog'
@@ -23,7 +22,6 @@ import TaskCommentsDialog from './task-comments-dialog'
 
 interface TaskListItemProps {
   task: Task
-  users: Profile[]
   onEdit: (task: Task) => void
   onDelete: (taskId: string) => void
   onOpenComments: (task: Task) => void
@@ -31,7 +29,7 @@ interface TaskListItemProps {
   onPriorityFilter?: (priority: string) => void
 }
 
-function TaskListItem({ task, users, onEdit, onDelete, onOpenComments, onStatusFilter, onPriorityFilter }: TaskListItemProps) {
+function TaskListItem({ task, onEdit, onDelete, onOpenComments, onStatusFilter, onPriorityFilter }: TaskListItemProps) {
   const hasComments = task.comments && task.comments.length > 0
 
   return (
@@ -178,10 +176,10 @@ export default function TaskManagementPage() {
     fetchUsers()
   }, [])
 
-  const handleCreateTask = async (data: CreateTaskInput) => {
+  const handleCreateTask = async (data: CreateTaskInput | UpdateTaskInput) => {
     try {
       setError('')
-      await createTask(data)
+      await createTask(data as CreateTaskInput)
       setCreateDialogOpen(false)
       refresh()
     } catch (err) {
@@ -191,10 +189,10 @@ export default function TaskManagementPage() {
     }
   }
 
-  const handleUpdateTask = async (data: UpdateTaskInput) => {
+  const handleUpdateTask = async (data: CreateTaskInput | UpdateTaskInput) => {
     try {
       setError('')
-      await updateTask(data)
+      await updateTask(data as UpdateTaskInput)
       setEditingTask(null)
       refresh()
     } catch (err) {
@@ -283,7 +281,6 @@ export default function TaskManagementPage() {
                   <TaskListItem
                     key={task.id}
                     task={task}
-                    users={users}
                     onEdit={setEditingTask}
                     onDelete={handleDeleteTask}
                     onOpenComments={setCommentsTask}
@@ -328,7 +325,7 @@ export default function TaskManagementPage() {
           task={commentsTask}
           open={!!commentsTask}
           onOpenChange={(open) => !open && setCommentsTask(null)}
-          onCommentAdded={(updatedTask) => {
+          onCommentAdded={() => {
             // Optionally update the task in the list to reflect new comment count
             refresh()
           }}

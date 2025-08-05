@@ -1,9 +1,8 @@
 "use client"
 
-import { useState, useMemo, useCallback } from "react"
-import { useGlobal } from '@/lib/context/GlobalContext';
+import { useState, useCallback } from "react"
 
-import { Search, Filter, ChevronLeft, ChevronRight, MoreHorizontal, Edit, Trash2, MessageCircle } from "lucide-react"
+import { Search, Filter, MoreHorizontal, Edit, Trash2, MessageCircle } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
@@ -18,7 +17,7 @@ import { Label } from "@/components/ui/label"
 import TaskDialog from "./task-dialog"
 import TaskCommentsDialog from "./task-comments-dialog"
 
-import { Database, TaskAssignee, TaskPriority, TaskStatus } from '@/lib/types';
+import { Task, TaskAssignee, TaskPriority, TaskStatus } from '@/lib/types';
 import { useTasks } from "../hooks/use-tasks";
 import {
   createSPASassClientAuthenticated as createSPASassClient
@@ -44,11 +43,8 @@ const priorityOptions = [
 //   searchParams: { [key: string]: string | undefined }  
 // }
 
-type Task = Database['public']['Tables']['tasks']['Row'];
-type NewTask = Database['public']['Tables']['tasks']['Insert'];
 
 export default function TaskList() {
-  const { user } = useGlobal();
 
   // Pagination and filter states
   const searchParams = useSearchParams()
@@ -62,13 +58,12 @@ export default function TaskList() {
   const [assigneeFilter, setAssigneeFilter] = useState<string[]>([])
 
   // UI states
-  const [editingTask, setEditingTask] = useState<any>(null)
-  const [commentsTask, setCommentsTask] = useState<any>(null)
+  const [editingTask, setEditingTask] = useState<Task | null>(null)
+  const [commentsTask, setCommentsTask] = useState<Task | null>(null)
   const [filterPopoverOpen, setFilterPopoverOpen] = useState(false)
-  const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null)
 
   // Fetch tasks with current filters
-  const { tasks, totalCount, totalPages, refetch } = useTasks({
+  const { tasks, totalCount, refetch } = useTasks({
     page: Number(currentPage),
     limit: Number(itemsPerPage),
     search: searchQuery,
@@ -104,7 +99,7 @@ export default function TaskList() {
   )
 
   const handleTaskUpdate = useCallback(
-    async (updatedTask: any) => {
+    async () => {
       setEditingTask(null)
       await refetch()
     },
@@ -147,7 +142,7 @@ export default function TaskList() {
 
   const getAssigneeEmails = (task_assignees: TaskAssignee[]) => {
     return task_assignees
-      .map((assignees) => assignees.profiles.email)
+      .map((assignees) => assignees.profiles?.email)
       .filter(Boolean)
       .join(", ")
   }
@@ -157,7 +152,7 @@ export default function TaskList() {
       <div className="flex justify-between items-center mb-8">
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900">Task Management</h1>
-                  <p className="text-gray-600 mt-2">Manage and track your team's tasks efficiently</p>
+                  <p className="text-gray-600 mt-2">Manage and track your team&apos;s tasks efficiently</p>
                 </div>
                 <TaskDialog mode="add" onTaskCreated={handleTaskCreated} />
       </div>
@@ -187,7 +182,7 @@ export default function TaskList() {
 
           {/* Quick Filters */}
           <div className="flex gap-2">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as TaskStatus | "all")}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -201,7 +196,7 @@ export default function TaskList() {
               </SelectContent>
             </Select>
 
-            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+            <Select value={priorityFilter} onValueChange={(value) => setPriorityFilter(value as TaskPriority | "all")}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Priority" />
               </SelectTrigger>
@@ -377,7 +372,7 @@ export default function TaskList() {
         {editingTask && (
           <TaskDialog
             mode="edit"
-            task={editingTask}
+            task={editingTask as unknown as Task & { task_assignees: TaskAssignee[] }}
             open={!!editingTask}
             onOpenChange={(open) => !open && setEditingTask(null)}
             onTaskUpdated={handleTaskUpdate}

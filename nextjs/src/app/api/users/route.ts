@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { createSSRClient } from '@/lib/supabase/server'
 import { SassClient, ClientType } from '@/lib/supabase/unified'
 import { ApiResponse } from '@/lib/types'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createSSRClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
