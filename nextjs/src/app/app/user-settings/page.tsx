@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useGlobal } from '@/lib/context/GlobalContext';
@@ -14,8 +14,56 @@ export default function UserSettingsPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [name, setName] = useState('');
+    const [nameLoading, setNameLoading] = useState(false);
 
+    // Load current name
+    useEffect(() => {
+        const loadProfile = async () => {
+            try {
+                const response = await fetch('/api/profile')
+                if (response.ok) {
+                    const { data } = await response.json()
+                    setName(data.name || '')
+                }
+            } catch (err) {
+                console.error('Failed to load profile:', err)
+            }
+        }
+        loadProfile()
+    }, [])
 
+    const handleNameUpdate = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!name.trim()) {
+            setError('Name cannot be empty')
+            return
+        }
+
+        setNameLoading(true)
+        setError('')
+        setSuccess('')
+
+        try {
+            const response = await fetch('/api/profile', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name.trim() })
+            })
+
+            if (!response.ok) {
+                const errorData = await response.json()
+                throw new Error(errorData.error || 'Failed to update name')
+            }
+
+            setSuccess('Name updated successfully')
+        } catch (err) {
+            const message = err instanceof Error ? err.message : 'Failed to update name'
+            setError(message)
+        } finally {
+            setNameLoading(false)
+        }
+    }
 
     const handlePasswordChange = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -97,6 +145,29 @@ export default function UserSettingsPage() {
                                 <label className="text-sm font-medium text-gray-500">Email</label>
                                 <p className="mt-1 text-sm">{user?.email}</p>
                             </div>
+                            <form onSubmit={handleNameUpdate} className="space-y-4">
+                                <div>
+                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                                        Display Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="name"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        placeholder="Enter your display name"
+                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-primary-500 text-sm"
+                                        required
+                                    />
+                                </div>
+                                <button
+                                    type="submit"
+                                    disabled={nameLoading}
+                                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
+                                >
+                                    {nameLoading ? 'Updating...' : 'Update Name'}
+                                </button>
+                            </form>
                         </CardContent>
                     </Card>
 
@@ -147,11 +218,11 @@ export default function UserSettingsPage() {
                         </CardContent>
                     </Card>
 
-                    <MFASetup
+                    {/* <MFASetup
                         onStatusChange={() => {
                             setSuccess('Two-factor authentication settings updated successfully');
                         }}
-                    />
+                    /> */}
                 </div>
             </div>
         </div>
