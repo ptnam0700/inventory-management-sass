@@ -9,7 +9,13 @@ import {
     X,
     ChevronDown,
     LogOut,
-    Key, Files, LucideListTodo,
+    Key, 
+    Files, 
+    LucideListTodo,
+    Package,
+    ShoppingCart,
+    TrendingUp,
+    RotateCcw,
 } from 'lucide-react';
 import { useGlobal } from "@/lib/context/GlobalContext";
 import { createSPASassClient } from "@/lib/supabase/client";
@@ -45,8 +51,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     const productName = process.env.NEXT_PUBLIC_PRODUCTNAME;
 
     const navigation = [
-        { name: 'Homepage', href: '/app', icon: Home },
-        { name: 'Inventory', href: '/app/storage', icon: Files },
+        { name: 'Dashboard', href: '/app', icon: Home },
+        { name: 'Inventory', href: '/app/inventory', icon: Package },
+        { name: 'Sales', href: '/app/sales', icon: ShoppingCart },
+        { name: 'Returns', href: '/app/returns', icon: RotateCcw },
+        { name: 'Purchase Orders', href: '/app/purchases', icon: TrendingUp },
+        { name: 'Analytics', href: '/app/analytics', icon: TrendingUp },
+        { name: 'Storage (Legacy)', href: '/app/storage', icon: Files },
         { name: 'Task Management', href: '/app/tasks', icon: LucideListTodo },
         { name: 'User Settings', href: '/app/user-settings', icon: User },
     ];
@@ -79,7 +90,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 {/* Navigation */}
                 <nav className="mt-4 px-2 space-y-1">
                     {navigation.map((item) => {
-                        const isActive = pathname === item.href;
+                        const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                         return (
                             <Link
                                 key={item.name}
