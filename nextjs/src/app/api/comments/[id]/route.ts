@@ -25,11 +25,11 @@ export async function PUT(
     
     const validatedData = UpdateCommentSchema.parse({ 
       id, 
-      content: body.content 
+      content: body.content || '' 
     })
     
     const sassClient = new SassClient(supabase, ClientType.SERVER)
-    const { data: comment, error } = await sassClient.updateComment(validatedData)
+    const { data: comment, error } = await sassClient.updateComment(validatedData as { id: string; content: string })
 
     if (error) {
       return NextResponse.json<ApiResponse>(

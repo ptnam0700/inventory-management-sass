@@ -3,8 +3,9 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Send, MessageCircle, Loader2, AlertCircle } from "lucide-react"
+import { Send, MessageCircle, Loader2, AlertCircle, Paperclip, Trash2 } from "lucide-react"
 import { format, formatDistanceToNow } from "date-fns"
+import Image from "next/image"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -12,9 +13,13 @@ import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { ImageUpload } from "@/components/ui/image-upload"
 import { useGlobal } from "@/lib/context/GlobalContext"
 import { useComments } from "./hooks/use-comments"
-import { Task } from "@/lib/types"
+import { TaskWithRelations } from "@/lib/types"
+import { generateImagePath } from "@/lib/utils/image-validation"
+import { createSPAClient } from "@/lib/supabase/client"
 
 
 const statusOptions = [
@@ -30,10 +35,10 @@ const priorityOptions = [
 ]
 
 interface TaskCommentsDialogProps {
-  task: Task
+  task: TaskWithRelations
   open: boolean
   onOpenChange: (open: boolean) => void
-  onCommentAdded?: (task: Task) => void
+  onCommentAdded?: (task: TaskWithRelations) => void
 }
 
 export default function TaskCommentsDialog({ task, open, onOpenChange, onCommentAdded }: TaskCommentsDialogProps) {
@@ -41,6 +46,10 @@ export default function TaskCommentsDialog({ task, open, onOpenChange, onComment
   
   const [newComment, setNewComment] = useState("")
   const [error, setError] = useState("")
+  const [selectedImage, setSelectedImage] = useState<File | null>(null)
+  const [isImageUploadOpen, setIsImageUploadOpen] = useState(false)
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
+  const [deletingImageIds, setDeletingImageIds] = useState<Set<string>>(new Set())
 
   const {
     comments,
@@ -98,12 +107,41 @@ export default function TaskCommentsDialog({ task, open, onOpenChange, onComment
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newComment.trim() || loading) return
+    if ((!newComment.trim() && !selectedImage) || loading) return
 
     try {
       setError('')
-      await createComment(newComment.trim())
+      setIsUploadingImage(true)
+      
+      let imageUrl = ''
+      let imagePath = ''
+      
+      // Upload image if selected
+      if (selectedImage && currentUser) {
+        const supabase = createSPAClient()
+        
+        imagePath = generateImagePath(currentUser.id, task.id, selectedImage.name)
+        
+        const { error: uploadError } = await supabase.storage
+          .from('comment-images')
+          .upload(imagePath, selectedImage)
+        
+        if (uploadError) {
+          throw new Error(`Failed to upload image: ${uploadError.message}`)
+        }
+        
+        // Get public URL
+        const { data: urlData } = supabase.storage
+          .from('comment-images')
+          .getPublicUrl(imagePath)
+        
+        imageUrl = urlData.publicUrl
+      }
+      
+      await createComment(newComment.trim() || '', imageUrl, imagePath)
       setNewComment('')
+      setSelectedImage(null)
+      setIsImageUploadOpen(false)
       
       // Optionally notify parent component
       if (onCommentAdded) {
@@ -113,17 +151,51 @@ export default function TaskCommentsDialog({ task, open, onOpenChange, onComment
             id: 'temp',
             task_id: task.id,
             author_id: currentUser!.id,
-            content: newComment.trim(),
+            content: newComment.trim() || '',
+            image_url: imageUrl,
             created_at: new Date().toISOString(),
             profiles: { id: currentUser!.id, email: currentUser!.email }
           }]
         }
-        onCommentAdded(updatedTask as Task)
+        onCommentAdded(updatedTask as TaskWithRelations)
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to create comment'
       setError(message)
       console.error('Error adding comment:', err)
+    } finally {
+      setIsUploadingImage(false)
+    }
+  }
+
+  const handleDeleteImage = async (commentId: string) => {
+    if (!currentUser) return
+    
+    try {
+      setDeletingImageIds(prev => new Set([...prev, commentId]))
+      
+      const response = await fetch(`/api/comments/${commentId}/image`, {
+        method: 'DELETE'
+      })
+      
+      if (!response.ok) {
+        const result = await response.json()
+        throw new Error(result.error || 'Failed to delete image')
+      }
+      
+      // Refresh comments to show updated state
+      window.location.reload() // Simple approach - you could also update state locally
+      
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete image'
+      setError(message)
+      console.error('Error deleting image:', err)
+    } finally {
+      setDeletingImageIds(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(commentId)
+        return newSet
+      })
     }
   }
 
@@ -135,7 +207,7 @@ export default function TaskCommentsDialog({ task, open, onOpenChange, onComment
 };
 
   const sortedComments = comments.sort(
-    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+    (a, b) => new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime(),
   )
 
   const displayError = error || commentsError
@@ -245,14 +317,46 @@ export default function TaskCommentsDialog({ task, open, onOpenChange, onComment
                                   isCurrentUser ? "bg-primary text-primary-foreground" : "bg-muted"
                                 }`}
                               >
-                                <p className="text-sm whitespace-pre-wrap">{comment.content}</p>
+                                {comment.content && comment.content.trim() && (
+                                  <p className="text-sm whitespace-pre-wrap mb-2">{comment.content}</p>
+                                )}
+                                {comment.image_url && (
+                                  <div className={`${comment.content && comment.content.trim() ? 'mt-2' : ''} relative group`}>
+                                    <Image
+                                      src={comment.image_url}
+                                      alt="Comment attachment"
+                                      width={300}
+                                      height={200}
+                                      className="max-w-full max-h-60 rounded-lg border cursor-pointer object-cover"
+                                      onClick={() => comment.image_url && window.open(comment.image_url, '_blank')}
+                                    />
+                                    {isCurrentUser && (
+                                      <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0"
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          handleDeleteImage(comment.id)
+                                        }}
+                                        disabled={deletingImageIds.has(comment.id)}
+                                      >
+                                        {deletingImageIds.has(comment.id) ? (
+                                          <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                          <Trash2 className="h-4 w-4" />
+                                        )}
+                                      </Button>
+                                    )}
+                                  </div>
+                                )}
                               </div>
 
                               <div className={`mt-1 text-xs text-muted-foreground ${isCurrentUser ? "text-right" : ""}`}>
                                 <span className="font-medium">{commentAuthor}</span>
                                 <span className="mx-1">•</span>
-                                <span title={format(new Date(comment.created_at), "PPpp")}>
-                                  {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+                                <span title={format(new Date(comment.created_at || 0), "PPpp")}>
+                                  {formatDistanceToNow(new Date(comment.created_at || 0), { addSuffix: true })}
                                 </span>
                               </div>
                             </div>
@@ -278,23 +382,58 @@ export default function TaskCommentsDialog({ task, open, onOpenChange, onComment
                     </span>
                 </div>
 
-                <div className="flex-1">
+                <div className="flex-1 space-y-3">
                   <Textarea
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Add a comment..."
+                    placeholder="Add a comment (optional)..."
                     rows={3}
                     className="resize-none"
                   />
+
+                  {/* Image Upload Section */}
+                  <Collapsible open={isImageUploadOpen} onOpenChange={setIsImageUploadOpen}>
+                    <div className="flex items-center gap-2">
+                      <CollapsibleTrigger asChild>
+                        <Button 
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="text-muted-foreground"
+                        >
+                          <Paperclip className="h-4 w-4 mr-1" />
+                          {selectedImage ? 'Change Image' : 'Attach Image (optional text above)'}
+                        </Button>
+                      </CollapsibleTrigger>
+                      {selectedImage && (
+                        <span className="text-xs text-muted-foreground">
+                          {selectedImage.name}
+                        </span>
+                      )}
+                    </div>
+                    
+                    <CollapsibleContent className="mt-2">
+                      <ImageUpload
+                        selectedImage={selectedImage}
+                        onImageSelect={setSelectedImage}
+                        onImageRemove={() => setSelectedImage(null)}
+                        isUploading={isUploadingImage}
+                      />
+                    </CollapsibleContent>
+                  </Collapsible>
                 </div>
               </div>
 
               <div className="flex justify-end">
-                <Button type="submit" disabled={!newComment.trim() || loading} size="sm">
-                  {loading ? (
+                <Button 
+                  type="submit" 
+                  disabled={(!newComment.trim() && !selectedImage) || loading || isUploadingImage} 
+                  size="sm"
+                >
+                  {loading || isUploadingImage ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Posting...
+                      {isUploadingImage ? 'Uploading...' : 'Posting...'}
                     </>
                   ) : (
                     <>

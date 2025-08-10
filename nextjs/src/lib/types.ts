@@ -1,3 +1,10 @@
+// Main Types Export
+// This file exports all types for the inventory management system
+
+// Export new structured types based on actual database schema
+export * from './types/database'
+
+// Keep legacy Supabase Database types for compatibility
 export type Json =
   | string
   | number
@@ -6,64 +13,6 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export type TaskStatus = 'Todo' | 'In Progress' | 'Done'
-export type TaskPriority = 'Low' | 'Medium' | 'High'
-
-export type Profile = {
-  id: string
-  email: string | null
-  name: string | null
-}
-
-export type TaskAssignee = {
-  user_id: string
-  task_id: string
-  profiles?: Profile
-}
-
-export type Comment = {
-  id: string
-  task_id: string
-  author_id: string
-  content: string
-  created_at: string
-  profiles?: Profile
-}
-
-export type Task = {
-  id: string
-  title: string
-  description: string | null
-  status: TaskStatus
-  priority: TaskPriority
-  due_date: string | null
-  created_by: string | null
-  created_at: string
-  updated_at: string
-  task_assignees?: TaskAssignee[]
-  comments?: Comment[]
-}
-
-export type TasksResponse = {
-  tasks: Task[]
-  totalCount: number
-  totalPages: number
-  currentPage: number
-}
-
-export type ApiResponse<T = unknown> = {
-  data?: T
-  error?: string
-  message?: string
-}
-
-export type PaginationMeta = {
-  currentPage: number
-  totalPages: number
-  totalCount: number
-  hasNextPage: boolean
-  hasPreviousPage: boolean
-}
 export type Database = {
   graphql_public: {
     Tables: {
@@ -127,20 +76,20 @@ export type Database = {
           id: string
           title: string
           description: string | null
-          status: TaskStatus
-          priority: TaskPriority
+          status: string
+          priority: string
           due_date: Date | string | null
           created_by: string | null
           created_at: string
           updated_at: string
-          task_assignees: TaskAssignee[]
+          task_assignees: unknown[]
         }
         Insert: {
           id?: string
           title: string
           description?: string | null
-          status?: TaskStatus
-          priority?: TaskPriority
+          status?: string
+          priority?: string
           due_date?: Date | string | null
           created_by?: string
           created_at?: string
@@ -150,8 +99,8 @@ export type Database = {
           id: string
           title?: string
           description?: string | null
-          status?: TaskStatus
-          priority?: TaskPriority
+          status?: string
+          priority?: string
           due_date?: Date | string | null
           created_at?: string
           updated_at?: string
@@ -170,6 +119,8 @@ export type Database = {
           task_id: string
           author_id: string
           content: string
+          image_url?: string
+          image_path?: string
           created_at: string
         }
         Insert: {
@@ -177,6 +128,8 @@ export type Database = {
           task_id: string
           author_id: string
           content: string
+          image_url?: string
+          image_path?: string
           created_at?: string
         }
         Update: {
@@ -184,6 +137,8 @@ export type Database = {
           task_id?: string
           author_id?: string
           content?: string
+          image_url?: string
+          image_path?: string
           created_at?: string
         }
         Relationships: []
@@ -266,5 +221,3 @@ export type TablesUpdate<
       ? U
       : never
     : never
-
-

@@ -1,10 +1,12 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Comment, ApiResponse } from '@/lib/types'
+import { Comment, Profile, ApiResponse } from '@/lib/types'
+
+type CommentWithRelations = Comment & { profiles?: Profile }
 
 export function useComments(taskId: string) {
-  const [comments, setComments] = useState<Comment[]>([])
+  const [comments, setComments] = useState<CommentWithRelations[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -16,7 +18,7 @@ export function useComments(taskId: string) {
       setError(null)
 
       const response = await fetch(`/api/tasks/${taskId}/comments`)
-      const result: ApiResponse<Comment[]> = await response.json()
+      const result: ApiResponse<CommentWithRelations[]> = await response.json()
 
       if (!response.ok) {
         throw new Error(result.error || 'Failed to fetch comments')
@@ -32,11 +34,15 @@ export function useComments(taskId: string) {
     }
   }, [taskId])
 
-  const createComment = async (content: string): Promise<Comment> => {
+  const createComment = async (content: string, imageUrl?: string, imagePath?: string): Promise<Comment> => {
     const response = await fetch(`/api/tasks/${taskId}/comments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content }),
+      body: JSON.stringify({ 
+        content: content || '',
+        image_url: imageUrl || '',
+        image_path: imagePath || ''
+      }),
     })
 
     const result: ApiResponse<Comment> = await response.json()

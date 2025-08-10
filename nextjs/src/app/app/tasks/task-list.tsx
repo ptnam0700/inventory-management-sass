@@ -17,7 +17,9 @@ import { Label } from "@/components/ui/label"
 import TaskDialog from "./task-dialog"
 import TaskCommentsDialog from "./task-comments-dialog"
 
-import { Task, TaskAssignee, TaskPriority, TaskStatus } from '@/lib/types';
+import { TaskWithRelations, TaskAssignee, TaskPriority, TaskStatus, Profile } from '@/lib/types';
+
+type TaskAssigneeWithProfile = TaskAssignee & { profiles?: Profile }
 import { useTasks } from "../hooks/use-tasks";
 import {
   createSPASassClientAuthenticated as createSPASassClient
@@ -58,8 +60,8 @@ export default function TaskList() {
   const [assigneeFilter, setAssigneeFilter] = useState<string[]>([])
 
   // UI states
-  const [editingTask, setEditingTask] = useState<Task | null>(null)
-  const [commentsTask, setCommentsTask] = useState<Task | null>(null)
+  const [editingTask, setEditingTask] = useState<TaskWithRelations | null>(null)
+  const [commentsTask, setCommentsTask] = useState<TaskWithRelations | null>(null)
   const [filterPopoverOpen, setFilterPopoverOpen] = useState(false)
 
   // Fetch tasks with current filters
@@ -140,7 +142,7 @@ export default function TaskList() {
     return <Badge className={cn("text-xs", priorityOption?.color)}>{priorityOption?.label}</Badge>
   }
 
-  const getAssigneeEmails = (task_assignees: TaskAssignee[]) => {
+  const getAssigneeEmails = (task_assignees: TaskAssigneeWithProfile[]) => {
     return task_assignees
       .map((assignees) => assignees.profiles?.email)
       .filter(Boolean)
@@ -258,7 +260,7 @@ export default function TaskList() {
 
         {/* Task Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {tasks?.map((task) => (
+          {tasks?.map((task: TaskWithRelations) => (
             <Card key={task.id} className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
@@ -372,7 +374,7 @@ export default function TaskList() {
         {editingTask && (
           <TaskDialog
             mode="edit"
-            task={editingTask as unknown as Task & { task_assignees: TaskAssignee[] }}
+            task={editingTask as TaskWithRelations}
             open={!!editingTask}
             onOpenChange={(open) => !open && setEditingTask(null)}
             onTaskUpdated={handleTaskUpdate}

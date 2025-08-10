@@ -9,7 +9,13 @@ import {
     X,
     ChevronDown,
     LogOut,
-    Key, Files, LucideListTodo,
+    Key, 
+    LucideListTodo,
+    Package,
+    ShoppingCart,
+    TrendingUp,
+    RotateCcw,
+    Store,
 } from 'lucide-react';
 import { useGlobal } from "@/lib/context/GlobalContext";
 import { createSPASassClient } from "@/lib/supabase/client";
@@ -45,8 +51,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     const productName = process.env.NEXT_PUBLIC_PRODUCTNAME;
 
     const navigation = [
-        { name: 'Homepage', href: '/app', icon: Home },
-        { name: 'Inventory', href: '/app/storage', icon: Files },
+        { name: 'Dashboard', href: '/app', icon: Home },
+        { name: 'Stores', href: '/app/stores', icon: Store },
+        { name: 'Inventory', href: '/app/inventory', icon: Package },
+        { name: 'Sales', href: '/app/sales', icon: ShoppingCart },
+        { name: 'Returns', href: '/app/returns', icon: RotateCcw },
+        { name: 'Analytics', href: '/app/analytics', icon: TrendingUp },
         { name: 'Task Management', href: '/app/tasks', icon: LucideListTodo },
         { name: 'User Settings', href: '/app/user-settings', icon: User },
     ];
@@ -79,7 +89,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 {/* Navigation */}
                 <nav className="mt-4 px-2 space-y-1">
                     {navigation.map((item) => {
-                        const isActive = pathname === item.href;
+                        const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                         return (
                             <Link
                                 key={item.name}
@@ -112,8 +122,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         <Menu className="h-6 w-6"/>
                     </button>
 
-                    <div className="relative ml-auto">
-                        <button
+                    <div className="flex items-center gap-4 ml-auto">
+                        <div className="relative">
+                            <button
                             onClick={() => setUserDropdownOpen(!isUserDropdownOpen)}
                             className="flex items-center space-x-2 text-sm text-gray-700 hover:text-gray-900"
                         >
@@ -158,6 +169,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                                 </div>
                             </div>
                         )}
+                        </div>
                     </div>
                 </div>
 
