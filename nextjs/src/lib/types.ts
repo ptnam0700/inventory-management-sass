@@ -26,6 +26,8 @@ export type Comment = {
   task_id: string
   author_id: string
   content: string
+  image_url?: string
+  image_path?: string
   created_at: string
   profiles?: Profile
 }
@@ -170,6 +172,8 @@ export type Database = {
           task_id: string
           author_id: string
           content: string
+          image_url?: string
+          image_path?: string
           created_at: string
         }
         Insert: {
@@ -177,6 +181,8 @@ export type Database = {
           task_id: string
           author_id: string
           content: string
+          image_url?: string
+          image_path?: string
           created_at?: string
         }
         Update: {
@@ -184,6 +190,8 @@ export type Database = {
           task_id?: string
           author_id?: string
           content?: string
+          image_url?: string
+          image_path?: string
           created_at?: string
         }
         Relationships: []

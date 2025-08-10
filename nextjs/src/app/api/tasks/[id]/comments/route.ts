@@ -63,17 +63,30 @@ export async function POST(
     const body = await request.json()
     
     console.log('Creating comment for task:', taskId, 'by user:', user.id)
+    console.log('Request body:', JSON.stringify(body, null, 2))
     
-    const validatedData = CreateCommentSchema.parse({ 
-      task_id: taskId, 
-      content: body.content 
-    })
+    let validatedData;
+    try {
+      const dataToValidate = { 
+        task_id: taskId, 
+        content: body.content || '',
+        image_url: body.image_url || '',
+        image_path: body.image_path || ''
+      };
+      console.log('Data to validate:', JSON.stringify(dataToValidate, null, 2));
+      validatedData = CreateCommentSchema.parse(dataToValidate);
+    } catch (validationError) {
+      console.error('Validation failed:', validationError);
+      throw validationError;
+    }
     
     const sassClient = new SassClient(supabase, ClientType.SERVER)
     const { data: comment, error } = await sassClient.createComment({
       task_id: validatedData.task_id,
       author_id: user.id,
       content: validatedData.content,
+      image_url: validatedData.image_url || undefined,
+      image_path: validatedData.image_path || undefined,
     })
 
     if (error) {
@@ -93,6 +106,7 @@ export async function POST(
     console.error('POST /api/tasks/[id]/comments error:', error)
     
     if (error instanceof Error && error.name === 'ZodError') {
+      console.error('Zod validation error:', error)
       return NextResponse.json<ApiResponse>(
         { error: 'Validation error', message: error.message }, 
         { status: 400 }

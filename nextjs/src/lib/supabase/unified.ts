@@ -211,7 +211,7 @@ export class SassClient {
         return task
     }
 
-    async createComment(input: { task_id: string; author_id: string; content: string }) {
+    async createComment(input: { task_id: string; author_id: string; content: string; image_url?: string; image_path?: string }) {
         const { data, error } = await this.client
             .from("comments")
             .insert([input])
