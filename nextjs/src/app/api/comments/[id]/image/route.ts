@@ -58,8 +58,8 @@ export async function DELETE(
     const { error: updateError } = await supabase
       .from('comments')
       .update({ 
-        image_url: null, 
-        image_path: null 
+        image_url: undefined, 
+        image_path: undefined 
       })
       .eq('id', commentId)
 

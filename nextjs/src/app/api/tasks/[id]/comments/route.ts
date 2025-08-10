@@ -84,7 +84,7 @@ export async function POST(
     const { data: comment, error } = await sassClient.createComment({
       task_id: validatedData.task_id,
       author_id: user.id,
-      content: validatedData.content,
+      content: validatedData.content || '',
       image_url: validatedData.image_url || undefined,
       image_path: validatedData.image_path || undefined,
     })

@@ -32,7 +32,7 @@ export function validateImageFile(file: File): ImageValidationError | null {
   }
 
   // Check MIME type
-  if (!IMAGE_CONFIG.ALLOWED_TYPES.includes(file.type)) {
+  if (!IMAGE_CONFIG.ALLOWED_TYPES.includes(file.type as typeof IMAGE_CONFIG.ALLOWED_TYPES[number])) {
     return {
       type: 'type',
       message: `Invalid file type. Only ${IMAGE_CONFIG.ALLOWED_TYPES.join(', ')} are allowed.`
@@ -41,7 +41,7 @@ export function validateImageFile(file: File): ImageValidationError | null {
 
   // Check file extension
   const extension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'))
-  if (!IMAGE_CONFIG.ALLOWED_EXTENSIONS.includes(extension)) {
+  if (!IMAGE_CONFIG.ALLOWED_EXTENSIONS.includes(extension as typeof IMAGE_CONFIG.ALLOWED_EXTENSIONS[number])) {
     return {
       type: 'extension', 
       message: `Invalid file extension. Only ${IMAGE_CONFIG.ALLOWED_EXTENSIONS.join(', ')} are allowed.`

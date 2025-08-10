@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "type-check": "tsc --noEmit",
+    "build:analyze": "ANALYZE=true npm run build",
+    "preview": "next build && next start",
+    "clean": "rm -rf .next node_modules/.cache",
+    "postinstall": "echo 'Build completed'"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -30,7 +36,6 @@
     "@radix-ui/react-tooltip": "^1.2.7",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.47.10",
-    "@tailwindcss/line-clamp": "^0.4.4",
     "@vercel/analytics": "^1.4.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

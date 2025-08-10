@@ -16,12 +16,11 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Trash2, Plus, ShoppingCart } from 'lucide-react'
-import { Sale, Product, Store as StoreType } from '@/lib/types'
+import { Trash2, Plus } from 'lucide-react'
+import { Sale } from '@/lib/types'
 import { useSales } from '../hooks/use-sales'
 import { useProducts } from '../../inventory/hooks/use-products'
 import { useStores } from '../../inventory/hooks/use-stores'
-import { format } from 'date-fns'
 
 interface SaleDialogProps {
   open: boolean
@@ -56,7 +55,6 @@ export function SaleDialog({ open, onOpenChange, sale, onSuccess }: SaleDialogPr
   const { products, fetchProducts } = useProducts()
   const { stores } = useStores()
   const [submitError, setSubmitError] = useState<string | null>(null)
-  const [selectedProducts, setSelectedProducts] = useState<Product[]>([])
 
   const {
     register,

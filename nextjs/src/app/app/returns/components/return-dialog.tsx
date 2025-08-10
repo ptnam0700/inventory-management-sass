@@ -17,12 +17,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Trash2, Plus, CheckCircle, XCircle } from 'lucide-react'
-import { Return, Product, Store as StoreType, Sale } from '@/lib/types'
+import { Return } from '@/lib/types'
 import { useReturns } from '../hooks/use-returns'
 import { useProducts } from '../../inventory/hooks/use-products'
 import { useStores } from '../../inventory/hooks/use-stores'
-import { useSales } from '../../sales/hooks/use-sales'
-import { format } from 'date-fns'
 
 interface ReturnDialogProps {
   open: boolean
@@ -54,7 +52,6 @@ export function ReturnDialog({ open, onOpenChange, returnRecord, onSuccess }: Re
   const { products, fetchProducts } = useProducts()
   const { stores } = useStores()
   const [submitError, setSubmitError] = useState<string | null>(null)
-  const [selectedSale, setSelectedSale] = useState<Sale | null>(null)
 
   const {
     register,
@@ -207,7 +204,6 @@ export function ReturnDialog({ open, onOpenChange, returnRecord, onSuccess }: Re
 
   const isViewOnly = !!returnRecord
   const canApprove = returnRecord?.status === 'PENDING'
-  const isCompleted = returnRecord?.status === 'COMPLETED' || returnRecord?.status === 'APPROVED'
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>

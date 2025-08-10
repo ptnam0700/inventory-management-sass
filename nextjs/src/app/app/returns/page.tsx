@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Return, ReturnsResponse, Store as StoreType } from '@/lib/types'
+import { Return } from '@/lib/types'
 import { ReturnDialog } from './components/return-dialog'
 import { useReturns } from './hooks/use-returns'
 import { useStores } from '../inventory/hooks/use-stores'
