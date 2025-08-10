@@ -17,7 +17,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ImageUpload } from "@/components/ui/image-upload"
 import { useGlobal } from "@/lib/context/GlobalContext"
 import { useComments } from "./hooks/use-comments"
-import { Task } from "@/lib/types"
+import { TaskWithRelations } from "@/lib/types"
 import { generateImagePath } from "@/lib/utils/image-validation"
 import { createSPAClient } from "@/lib/supabase/client"
 
@@ -35,10 +35,10 @@ const priorityOptions = [
 ]
 
 interface TaskCommentsDialogProps {
-  task: Task
+  task: TaskWithRelations
   open: boolean
   onOpenChange: (open: boolean) => void
-  onCommentAdded?: (task: Task) => void
+  onCommentAdded?: (task: TaskWithRelations) => void
 }
 
 export default function TaskCommentsDialog({ task, open, onOpenChange, onCommentAdded }: TaskCommentsDialogProps) {
@@ -157,7 +157,7 @@ export default function TaskCommentsDialog({ task, open, onOpenChange, onComment
             profiles: { id: currentUser!.id, email: currentUser!.email }
           }]
         }
-        onCommentAdded(updatedTask as Task)
+        onCommentAdded(updatedTask as TaskWithRelations)
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to create comment'
@@ -207,7 +207,7 @@ export default function TaskCommentsDialog({ task, open, onOpenChange, onComment
 };
 
   const sortedComments = comments.sort(
-    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+    (a, b) => new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime(),
   )
 
   const displayError = error || commentsError
@@ -328,7 +328,7 @@ export default function TaskCommentsDialog({ task, open, onOpenChange, onComment
                                       width={300}
                                       height={200}
                                       className="max-w-full max-h-60 rounded-lg border cursor-pointer object-cover"
-                                      onClick={() => window.open(comment.image_url, '_blank')}
+                                      onClick={() => comment.image_url && window.open(comment.image_url, '_blank')}
                                     />
                                     {isCurrentUser && (
                                       <Button
@@ -355,8 +355,8 @@ export default function TaskCommentsDialog({ task, open, onOpenChange, onComment
                               <div className={`mt-1 text-xs text-muted-foreground ${isCurrentUser ? "text-right" : ""}`}>
                                 <span className="font-medium">{commentAuthor}</span>
                                 <span className="mx-1">•</span>
-                                <span title={format(new Date(comment.created_at), "PPpp")}>
-                                  {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+                                <span title={format(new Date(comment.created_at || 0), "PPpp")}>
+                                  {formatDistanceToNow(new Date(comment.created_at || 0), { addSuffix: true })}
                                 </span>
                               </div>
                             </div>

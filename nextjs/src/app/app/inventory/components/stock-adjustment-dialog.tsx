@@ -15,13 +15,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Product, AdjustmentReason } from '@/lib/types'
+import { ProductWithRelations } from '@/lib/types'
 import { useStores } from '../hooks/use-stores'
 
 interface StockAdjustmentDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  product?: Product | null
+  product?: ProductWithRelations | null
   onSuccess?: () => void
 }
 
@@ -29,7 +29,7 @@ interface StockAdjustmentFormData {
   store_id: string
   adjustment_type: 'INCREASE' | 'DECREASE' | 'SET'
   quantity: number
-  reason: AdjustmentReason
+  reason: string
   notes: string
 }
 
@@ -74,7 +74,9 @@ export function StockAdjustmentDialog({
     if (product?.stock) {
       const stockByStore: Record<string, number> = {}
       product.stock.forEach(stock => {
-        stockByStore[stock.store_id] = stock.quantity
+        if (stock.store_id) {
+          stockByStore[stock.store_id] = stock.quantity
+        }
       })
       setCurrentStock(stockByStore)
     }
@@ -264,7 +266,7 @@ export function StockAdjustmentDialog({
               <Label htmlFor="reason">Reason *</Label>
               <Select
                 value={watch('reason')}
-                onValueChange={(value: AdjustmentReason) => setValue('reason', value)}
+                onValueChange={(value: string) => setValue('reason', value)}
               >
                 <SelectTrigger>
                   <SelectValue />

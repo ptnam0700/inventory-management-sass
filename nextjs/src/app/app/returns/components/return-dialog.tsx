@@ -17,7 +17,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Trash2, Plus, CheckCircle, XCircle } from 'lucide-react'
-import { Return } from '@/lib/types'
+import { ReturnWithRelations } from '@/lib/types'
 import { useReturns } from '../hooks/use-returns'
 import { useProducts } from '../../inventory/hooks/use-products'
 import { useStores } from '../../inventory/hooks/use-stores'
@@ -25,7 +25,7 @@ import { useStores } from '../../inventory/hooks/use-stores'
 interface ReturnDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  returnRecord?: Return | null
+  returnRecord?: ReturnWithRelations | null
   onSuccess?: () => void
 }
 

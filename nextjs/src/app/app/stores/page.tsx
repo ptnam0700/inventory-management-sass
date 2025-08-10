@@ -15,7 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Store as StoreType } from '@/lib/types'
+import { StoreWithRelations as StoreType } from '@/lib/types'
 import { StoreDialog } from './components/store-dialog'
 import { useStores } from '../inventory/hooks/use-stores'
 import {
@@ -202,10 +202,10 @@ export default function StoresPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        {store.profiles ? (
+                        {store.manager ? (
                           <div className="flex items-center gap-2">
                             <User className="w-4 h-4 text-muted-foreground" />
-                            <span>{store.profiles.name || store.profiles.email}</span>
+                            <span>{store.manager.name || store.manager.email}</span>
                           </div>
                         ) : (
                           <span className="text-sm text-muted-foreground">No manager assigned</span>

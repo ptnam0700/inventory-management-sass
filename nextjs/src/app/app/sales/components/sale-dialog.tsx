@@ -17,7 +17,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Trash2, Plus } from 'lucide-react'
-import { Sale } from '@/lib/types'
+import { SaleWithRelations } from '@/lib/types'
 import { useSales } from '../hooks/use-sales'
 import { useProducts } from '../../inventory/hooks/use-products'
 import { useStores } from '../../inventory/hooks/use-stores'
@@ -25,7 +25,7 @@ import { useStores } from '../../inventory/hooks/use-stores'
 interface SaleDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  sale?: Sale | null
+  sale?: SaleWithRelations | null
   onSuccess?: () => void
 }
 

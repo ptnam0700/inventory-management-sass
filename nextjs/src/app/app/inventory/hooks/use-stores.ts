@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import { Store, StoresResponse, ApiResponse } from '@/lib/types'
+import { StoreWithRelations, StoresResponse, ApiResponse } from '@/lib/types'
 
 interface UseStoresProps {
   search?: string
@@ -11,7 +11,7 @@ interface UseStoresProps {
 }
 
 export function useStores() {
-  const [stores, setStores] = useState<Store[]>([])
+  const [stores, setStores] = useState<StoreWithRelations[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [totalCount, setTotalCount] = useState(0)
@@ -55,7 +55,7 @@ export function useStores() {
     }
   }, [])
 
-  const createStore = useCallback(async (storeData: Partial<Store>) => {
+  const createStore = useCallback(async (storeData: Partial<StoreWithRelations>) => {
     setLoading(true)
     setError(null)
 
@@ -73,7 +73,7 @@ export function useStores() {
         throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
       }
 
-      const result: ApiResponse<Store> = await response.json()
+      const result: ApiResponse<StoreWithRelations> = await response.json()
       
       if (result.error) {
         throw new Error(result.error)
@@ -88,7 +88,7 @@ export function useStores() {
     }
   }, [])
 
-  const updateStore = useCallback(async (id: string, storeData: Partial<Store>) => {
+  const updateStore = useCallback(async (id: string, storeData: Partial<StoreWithRelations>) => {
     setLoading(true)
     setError(null)
 
@@ -106,7 +106,7 @@ export function useStores() {
         throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
       }
 
-      const result: ApiResponse<Store> = await response.json()
+      const result: ApiResponse<StoreWithRelations> = await response.json()
       
       if (result.error) {
         throw new Error(result.error)

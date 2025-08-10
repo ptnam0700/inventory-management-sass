@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Product, ProductsResponse, ApiResponse } from '@/lib/types'
+import { ProductWithRelations, ProductsResponse, ApiResponse } from '@/lib/types'
 
 interface UseProductsProps {
   search?: string
@@ -13,7 +13,7 @@ interface UseProductsProps {
 }
 
 export function useProducts() {
-  const [products, setProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<ProductWithRelations[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [totalCount, setTotalCount] = useState(0)
@@ -59,7 +59,7 @@ export function useProducts() {
     }
   }, [])
 
-  const createProduct = useCallback(async (productData: Partial<Product>) => {
+  const createProduct = useCallback(async (productData: Partial<ProductWithRelations>) => {
     setLoading(true)
     setError(null)
 
@@ -77,7 +77,7 @@ export function useProducts() {
         throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
       }
 
-      const result: ApiResponse<Product> = await response.json()
+      const result: ApiResponse<ProductWithRelations> = await response.json()
       
       if (result.error) {
         throw new Error(result.error)
@@ -92,7 +92,7 @@ export function useProducts() {
     }
   }, [])
 
-  const updateProduct = useCallback(async (id: string, productData: Partial<Product>) => {
+  const updateProduct = useCallback(async (id: string, productData: Partial<ProductWithRelations>) => {
     setLoading(true)
     setError(null)
 
@@ -110,7 +110,7 @@ export function useProducts() {
         throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
       }
 
-      const result: ApiResponse<Product> = await response.json()
+      const result: ApiResponse<ProductWithRelations> = await response.json()
       
       if (result.error) {
         throw new Error(result.error)

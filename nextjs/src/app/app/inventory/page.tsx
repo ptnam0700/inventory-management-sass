@@ -16,7 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Product } from '@/lib/types'
+import { ProductWithRelations } from '@/lib/types'
 import { ProductDialog } from './components/product-dialog'
 import { StockAdjustmentDialog } from './components/stock-adjustment-dialog'
 import { useProducts } from './hooks/use-products'
@@ -29,7 +29,7 @@ export default function InventoryPage() {
   const [showLowStock, setShowLowStock] = useState(false)
   const [productDialogOpen, setProductDialogOpen] = useState(false)
   const [stockDialogOpen, setStockDialogOpen] = useState(false)
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [selectedProduct, setSelectedProduct] = useState<ProductWithRelations | null>(null)
 
   const { products, loading, error, fetchProducts } = useProducts()
   const { stores } = useStores()
@@ -42,17 +42,17 @@ export default function InventoryPage() {
     })
   }, [search, selectedStore, showLowStock, fetchProducts])
 
-  const handleEditProduct = (product: Product) => {
+  const handleEditProduct = (product: ProductWithRelations) => {
     setSelectedProduct(product)
     setProductDialogOpen(true)
   }
 
-  const handleStockAdjustment = (product: Product) => {
+  const handleStockAdjustment = (product: ProductWithRelations) => {
     setSelectedProduct(product)
     setStockDialogOpen(true)
   }
 
-  const getStockStatus = (product: Product) => {
+  const getStockStatus = (product: ProductWithRelations) => {
     const totalQuantity = product.stock?.reduce((sum, stock) => sum + stock.quantity, 0) || 0
     
     if (totalQuantity === 0) {
@@ -93,7 +93,7 @@ export default function InventoryPage() {
     return "text-green-600 font-semibold"
   }
 
-  const getStockValue = (product: Product) => {
+  const getStockValue = (product: ProductWithRelations) => {
     const totalQuantity = product.stock?.reduce((sum, stock) => sum + stock.quantity, 0) || 0
     return totalQuantity * product.cost_price
   }

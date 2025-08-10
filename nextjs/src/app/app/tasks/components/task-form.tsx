@@ -12,12 +12,12 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Badge } from '@/components/ui/badge'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import { CreateTaskInput, UpdateTaskInput } from '@/lib/validations/task'
-import { Task, Profile } from '@/lib/types'
+import { TaskWithRelations, Profile } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 
 interface TaskFormProps {
-  task?: Task
+  task?: TaskWithRelations
   users?: Profile[]
   onSubmit: (data: CreateTaskInput | UpdateTaskInput) => Promise<void>
   onCancel: () => void

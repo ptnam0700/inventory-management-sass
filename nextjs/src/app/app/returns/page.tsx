@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Return } from '@/lib/types'
+import { ReturnWithRelations } from '@/lib/types'
 import { ReturnDialog } from './components/return-dialog'
 import { useReturns } from './hooks/use-returns'
 import { useStores } from '../inventory/hooks/use-stores'
@@ -21,7 +21,7 @@ export default function ReturnsPage() {
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [returnDialogOpen, setReturnDialogOpen] = useState(false)
-  const [selectedReturn, setSelectedReturn] = useState<Return | null>(null)
+  const [selectedReturn, setSelectedReturn] = useState<ReturnWithRelations | null>(null)
 
   const { returns, loading, error, fetchReturns } = useReturns()
   const { stores } = useStores()
@@ -37,7 +37,7 @@ export default function ReturnsPage() {
     })
   }, [search, selectedStore, returnType, status, startDate, endDate, fetchReturns])
 
-  const handleViewReturn = (returnRecord: Return) => {
+  const handleViewReturn = (returnRecord: ReturnWithRelations) => {
     setSelectedReturn(returnRecord)
     setReturnDialogOpen(true)
   }

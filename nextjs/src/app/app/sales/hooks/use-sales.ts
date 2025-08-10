@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Sale, SalesResponse, ApiResponse } from '@/lib/types'
+import { SaleWithRelations, SalesResponse, ApiResponse } from '@/lib/types'
 
 interface SalesFilters {
   search?: string
@@ -15,7 +15,7 @@ interface SalesFilters {
 }
 
 export function useSales() {
-  const [sales, setSales] = useState<Sale[]>([])
+  const [sales, setSales] = useState<SaleWithRelations[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [totalCount, setTotalCount] = useState(0)
@@ -98,7 +98,7 @@ export function useSales() {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      const result: ApiResponse<Sale> = await response.json()
+      const result: ApiResponse<SaleWithRelations> = await response.json()
       
       if (result.error) {
         throw new Error(result.error)
@@ -137,7 +137,7 @@ export function useSales() {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      const result: ApiResponse<Sale> = await response.json()
+      const result: ApiResponse<SaleWithRelations> = await response.json()
       
       if (result.error) {
         throw new Error(result.error)
@@ -191,7 +191,7 @@ export function useSales() {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
       
-      const result: ApiResponse<Sale> = await response.json()
+      const result: ApiResponse<SaleWithRelations> = await response.json()
       
       if (result.error) {
         throw new Error(result.error)

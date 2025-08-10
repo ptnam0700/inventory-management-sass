@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { StockAdjustment, ApiResponse } from '@/lib/types'
+import { StockAdjustmentWithRelations, AdjustmentsResponse, ApiResponse } from '@/lib/types'
 
 interface UseAdjustmentsProps {
   store_id?: string
@@ -13,15 +13,9 @@ interface UseAdjustmentsProps {
   limit?: number
 }
 
-interface AdjustmentsResponse {
-  adjustments: StockAdjustment[]
-  totalCount: number
-  totalPages: number
-  currentPage: number
-}
 
 export function useAdjustments() {
-  const [adjustments, setAdjustments] = useState<StockAdjustment[]>([])
+  const [adjustments, setAdjustments] = useState<StockAdjustmentWithRelations[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [totalCount, setTotalCount] = useState(0)

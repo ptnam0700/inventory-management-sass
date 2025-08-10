@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Task, TasksResponse, ApiResponse } from '@/lib/types'
+import { TaskWithRelations, TasksResponse, ApiResponse } from '@/lib/types'
 import { TaskQueryInput } from '@/lib/validations/task'
 
 export function useTasks(initialQuery: Partial<TaskQueryInput> = {}) {
-  const [tasks, setTasks] = useState<Task[]>([])
+  const [tasks, setTasks] = useState<TaskWithRelations[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [meta, setMeta] = useState({
@@ -47,7 +47,7 @@ export function useTasks(initialQuery: Partial<TaskQueryInput> = {}) {
       }
 
       if (result.data) {
-        setTasks(result.data.tasks)
+        setTasks(result.data.data)
         setMeta({
           currentPage: result.data.currentPage,
           totalPages: result.data.totalPages,

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Return, ReturnsResponse, ApiResponse } from '@/lib/types'
+import { ReturnWithRelations, ReturnsResponse, ApiResponse } from '@/lib/types'
 
 interface ReturnsFilters {
   search?: string
@@ -15,7 +15,7 @@ interface ReturnsFilters {
 }
 
 export function useReturns() {
-  const [returns, setReturns] = useState<Return[]>([])
+  const [returns, setReturns] = useState<ReturnWithRelations[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [totalCount, setTotalCount] = useState(0)
@@ -95,7 +95,7 @@ export function useReturns() {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      const result: ApiResponse<Return> = await response.json()
+      const result: ApiResponse<ReturnWithRelations> = await response.json()
       
       if (result.error) {
         throw new Error(result.error)
@@ -132,7 +132,7 @@ export function useReturns() {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      const result: ApiResponse<Return> = await response.json()
+      const result: ApiResponse<ReturnWithRelations> = await response.json()
       
       if (result.error) {
         throw new Error(result.error)
@@ -186,7 +186,7 @@ export function useReturns() {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
       
-      const result: ApiResponse<Return> = await response.json()
+      const result: ApiResponse<ReturnWithRelations> = await response.json()
       
       if (result.error) {
         throw new Error(result.error)

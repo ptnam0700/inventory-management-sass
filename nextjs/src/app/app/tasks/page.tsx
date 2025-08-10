@@ -15,16 +15,16 @@ import { Pagination } from './components/pagination'
 import { AvatarStack } from './components/avatar-stack'
 import { StatusChip, PriorityChip } from './components/status-priority-chips'
 import { DueDateDisplay } from './components/due-date-display'
-import { Task, Profile } from '@/lib/types'
+import { TaskWithRelations, Profile } from '@/lib/types'
 import { CreateTaskInput, UpdateTaskInput } from '@/lib/validations/task'
 import TaskCommentsDialog from './task-comments-dialog'
 
 
 interface TaskListItemProps {
-  task: Task
-  onEdit: (task: Task) => void
+  task: TaskWithRelations
+  onEdit: (task: TaskWithRelations) => void
   onDelete: (taskId: string) => void
-  onOpenComments: (task: Task) => void
+  onOpenComments: (task: TaskWithRelations) => void
   onStatusFilter?: (status: string) => void
   onPriorityFilter?: (priority: string) => void
 }
@@ -143,8 +143,8 @@ function TaskListItem({ task, onEdit, onDelete, onOpenComments, onStatusFilter, 
 export default function TaskManagementPage() {
   const [users, setUsers] = useState<Profile[]>([])
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
-  const [editingTask, setEditingTask] = useState<Task | null>(null)
-  const [commentsTask, setCommentsTask] = useState<Task | null>(null)
+  const [editingTask, setEditingTask] = useState<TaskWithRelations | null>(null)
+  const [commentsTask, setCommentsTask] = useState<TaskWithRelations | null>(null)
   const [error, setError] = useState<string>('')
 
   const { 

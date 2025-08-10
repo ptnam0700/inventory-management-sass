@@ -6,7 +6,7 @@ import { useGlobal } from '@/lib/context/GlobalContext';
 import {
   createSPASassClientAuthenticated as createSPASassClient
 } from '@/lib/supabase/client';
-import { Database, TaskPriority, TaskStatus } from '@/lib/types';
+import { TaskWithRelations, TaskPriority, TaskStatus, Database } from '@/lib/types';
 
 import { useState, useEffect } from "react"
 import { Plus, Loader2, AlertCircle, Calendar, Check, ChevronsUpDown, X } from "lucide-react"
@@ -38,9 +38,9 @@ const priorityOptions = [
   { value: "High", label: "High" },
 ]
 
-type Task = Database['public']['Tables']['tasks']['Row'];
-type NewTask = Database['public']['Tables']['tasks']['Insert'];
-type UpdateTask = Database['public']['Tables']['tasks']['Update'];
+// Remove the old type definitions and use the clean types from @/lib/types
+type NewTask = Omit<TaskWithRelations, 'id' | 'created_at' | 'updated_at' | 'task_assignees'>
+type UpdateTask = Partial<TaskWithRelations> & { id: string }
 
 interface TaskDialogProps {
   // For Add mode
@@ -48,7 +48,7 @@ interface TaskDialogProps {
   onTaskCreated?: () => Promise<void>
 
   // For Edit mode
-  task?: Task
+  task?: TaskWithRelations
   open?: boolean
   onOpenChange?: (open: boolean) => void
   onTaskUpdated?: (task: UpdateTask) => Promise<void>
@@ -132,13 +132,11 @@ export default function TaskDialog({
             title: title.trim(),
             description: description.trim() || null,
             status,
-            due_date: dueDate || null,
+            due_date: dueDate ? dueDate.toISOString() : null,
             priority,
             created_by: user.id,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
         }
-        await supabase.createTaskWithAssignees(newTask, assignees);
+        await supabase.createTaskWithAssignees(newTask as unknown as Database['public']['Tables']['tasks']['Insert'], assignees);
 
         resetForm()
         setIsOpen(false)
@@ -150,12 +148,12 @@ export default function TaskDialog({
           title: title.trim(),
           description: description.trim() || null,
           status,
-          due_date: dueDate || null,
+          due_date: dueDate ? dueDate.toISOString() : null,
           priority,
           updated_at: new Date().toISOString(),
         }
 
-        await supabase.updateTask(updatedTask, assignees);
+        await supabase.updateTask(updatedTask as unknown as Database['public']['Tables']['tasks']['Update'], assignees);
         console.log("Updating task:", updatedTask)
 
         if (onTaskUpdated) await onTaskUpdated(updatedTask)
