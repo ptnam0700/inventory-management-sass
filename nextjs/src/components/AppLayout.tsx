@@ -48,7 +48,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             : parts[0].slice(0, 2).toUpperCase();
     };
 
-    const productName = process.env.NEXT_PUBLIC_PRODUCTNAME;
 
     const navigation = [
         { name: 'Dashboard', href: '/app', icon: Home },
@@ -77,7 +76,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
 
                 <div className="h-16 flex items-center justify-between px-4 border-b">
-                    <span className="text-xl font-semibold text-primary-600">{productName}</span>
+                    <div className="flex items-center space-x-2">
+                        <img
+                            src="/assets/logo.jpg"
+                            alt="HATESCO Logo"
+                            className="h-8 w-8 object-contain"
+                        />
+                        <div className="flex flex-col">
+                            <span className="text-sm font-bold text-black-600">HATESCO</span>
+                            <span className="text-xs text-muted-foreground -mt-0.5">Inventory Management</span>
+                        </div>
+                    </div>
                     <button
                         onClick={toggleSidebar}
                         className="lg:hidden text-gray-500 hover:text-gray-700"

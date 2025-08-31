@@ -9,22 +9,22 @@ export default function AuthLayout({
     const productName = process.env.NEXT_PUBLIC_PRODUCTNAME;
     const testimonials = [
         {
-            quote: "This template helped us launch our SaaS product in just two weeks. The authentication and multi-tenancy features are rock solid.",
-            author: "Sarah Chen",
-            role: "CTO, TechStart",
-            avatar: "SC"
+            quote: "HATESCO's inventory system revolutionized our multi-store operations. Real-time stock tracking across all locations has reduced stockouts by 80%.",
+            author: "Nguyen Van Duc",
+            role: "Operations Manager, HATESCO",
+            avatar: "ND"
         },
         {
-            quote: "The best part is how well thought out the organization management is. It saved us months of development time.",
-            author: "Michael Roberts",
-            role: "Founder, DataFlow",
-            avatar: "MR"
+            quote: "The automated stock movements and comprehensive audit trail give us complete visibility into our inventory flow. Perfect for our retail chain.",
+            author: "Tran Thi Mai",
+            role: "Store Manager, HATESCO Hanoi",
+            avatar: "TM"
         },
         {
-            quote: "Clean code, great documentation, and excellent support. Exactly what we needed to get our MVP off the ground.",
-            author: "Jessica Kim",
-            role: "Lead Developer, CloudScale",
-            avatar: "JK"
+            quote: "From sales tracking to return processing, this system handles everything seamlessly. Our inventory accuracy improved dramatically since implementation.",
+            author: "Le Minh Quan",
+            role: "IT Director, HATESCO Group",
+            avatar: "LQ"
         }
     ];
 
@@ -40,7 +40,7 @@ export default function AuthLayout({
                 </Link>
 
                 <div className="sm:mx-auto sm:w-full sm:max-w-md">
-                    <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900">
+                    <h2 className="text-center text-3xl font-bold tracking-tight text-black">
                         {productName}
                     </h2>
                 </div>
@@ -53,9 +53,6 @@ export default function AuthLayout({
             <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-600 to-primary-800">
                 <div className="w-full flex items-center justify-center p-12">
                     <div className="space-y-6 max-w-lg">
-                        <h3 className="text-white text-2xl font-bold mb-8">
-                            Trusted by developers worldwide
-                        </h3>
                         {testimonials.map((testimonial, index) => (
                             <div
                                 key={index}
@@ -83,11 +80,6 @@ export default function AuthLayout({
                                 </div>
                             </div>
                         ))}
-                        <div className="mt-8 text-center">
-                            <p className="text-primary-100 text-sm">
-                                Join thousands of developers building with {productName}
-                            </p>
-                        </div>
                     </div>
                 </div>
             </div>
