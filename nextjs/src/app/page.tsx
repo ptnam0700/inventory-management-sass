@@ -4,8 +4,6 @@ import { ArrowRight, Globe, Shield, Users, Database, Clock } from 'lucide-react'
 import AuthAwareButtons from '@/components/AuthAwareButtons';
 
 export default function Home() {
-  const productName = process.env.NEXT_PUBLIC_PRODUCTNAME;
-
   const features = [
     {
       icon: Database,
@@ -45,13 +43,6 @@ export default function Home() {
     }
   ];
 
-  const stats = [
-    { label: 'Products Tracked', value: '50K+' },
-    { label: 'Store Locations', value: '25+' },
-    { label: 'Daily Transactions', value: '1000+' },
-    { label: 'System Uptime', value: '99.9%' }
-  ];
-
   return (
       <div className="min-h-screen">
         <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-sm z-50 border-b border-gray-100">
@@ -83,7 +74,7 @@ export default function Home() {
                 <span className="block text-primary-600">Management Solutions</span>
               </h1>
               <p className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto">
-                Streamline your business operations with HATESCO's comprehensive multi-store inventory management system. Track products, manage sales, and analyze performance across all your locations.
+                Streamline your business operations with HATESCO&apos;s comprehensive multi-store inventory management system. Track products, manage sales, and analyze performance across all your locations.
               </p>
               <div className="mt-10 flex gap-4 justify-center">
                 <AuthAwareButtons />
